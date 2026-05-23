@@ -1,0 +1,51 @@
+name: for_selling
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+
+  # 상태관리
+  provider: ^6.1.2
+
+  # 로컬 저장(업체/설정 저장)
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.5
+
+  # PDF 생성/미리보기(공유/출력)
+  pdf: ^3.11.1
+  printing: ^5.13.4
+
+  # 금액 콤마/날짜 포맷
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: assets/icon/app_icon.png
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/templates/statement.png
+    - assets/templates/quote.png
+    - assets/fonts/NotoSansKR-Regular.ttf
+    - assets/fonts/NotoSansKR-Bold.ttf
