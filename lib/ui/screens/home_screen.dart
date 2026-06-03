@@ -132,8 +132,12 @@ class _DocFormState extends State<_DocForm> {
       _selectedPresetId = '';
     }
 
+    // Add the system navigation bar height to the bottom padding so the
+    // last button isn't hidden behind it on phones with a nav bar.
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + bottomInset),
       child: Column(
         children: [
           const _Panel(child: _CompanyPickers()),
@@ -325,9 +329,28 @@ class _DocFormState extends State<_DocForm> {
           _Panel(
             child: Column(
               children: [
+                Row(
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        '세액 포함',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    Switch(
+                      value: doc.vatIncluded,
+                      onChanged: (v) =>
+                          context.read<DocProvider>().setVatIncluded(v),
+                    ),
+                  ],
+                ),
+                const Divider(),
                 _sumRow('합계단가', Formatters.moneyWon(doc.totalUnitPrice)),
                 _sumRow('합계공급가액', Formatters.moneyWon(doc.totalSupply)),
-                _sumRow('합계세액', Formatters.moneyWon(doc.totalVat)),
+                _sumRow(
+                  '합계세액',
+                  doc.vatIncluded ? Formatters.moneyWon(doc.totalVat) : '-',
+                ),
                 const Divider(),
                 _sumRow(
                   '합계금액',
@@ -407,7 +430,11 @@ class _PdfPreviewScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Consumer<DocProvider>(
+      // top: false → AppBar already handles the top inset; only guard the
+      // bottom so the print/share action bar clears the navigation bar.
+      body: SafeArea(
+        top: false,
+        child: Consumer<DocProvider>(
         builder: (context, doc, _) {
           final prefix = doc.docType == DocType.quote ? '견적서' : '거래명세서';
           final fileName = '${prefix}_${Formatters.date(doc.date)}.pdf';
@@ -422,6 +449,7 @@ class _PdfPreviewScreen extends StatelessWidget {
             build: (_) => PdfService.buildPdf(doc: doc),
           );
         },
+        ),
       ),
     );
   }

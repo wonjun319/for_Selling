@@ -14,6 +14,8 @@ class DocProvider extends ChangeNotifier {
   bool showAccountInfo = false;
   VatMode vatMode = VatMode.included;
 
+  bool get vatIncluded => vatMode == VatMode.included;
+
   Company? myCompany;
   Company? partnerCompany;
 
@@ -52,6 +54,11 @@ class DocProvider extends ChangeNotifier {
     touchPdf();
   }
 
+  void setVatIncluded(bool v) {
+    vatMode = v ? VatMode.included : VatMode.excluded;
+    touchPdf();
+  }
+
   void setMyCompany(Company? c) {
     myCompany = c;
     touchPdf();
@@ -79,9 +86,10 @@ class DocProvider extends ChangeNotifier {
   }
 
   int get totalUnitPrice => items.fold(0, (sum, it) => sum + it.unitPrice);
-  int get totalSupply => items.fold(0, (sum, it) => sum + it.supply);
-  int get totalVat => items.fold(0, (sum, it) => sum + it.vat);
-  int get totalAmount => totalSupply + totalVat;
+  int get totalSupply =>
+      items.fold(0, (sum, it) => sum + it.supplyOf(vatIncluded));
+  int get totalVat => items.fold(0, (sum, it) => sum + it.vatOf(vatIncluded));
+  int get totalAmount => items.fold(0, (sum, it) => sum + it.amount);
 
   String get yy => (date.year % 100).toString().padLeft(2, '0');
   String get mm => date.month.toString().padLeft(2, '0');

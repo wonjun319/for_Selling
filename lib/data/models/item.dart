@@ -13,10 +13,15 @@ class Item {
     return '$n*$q';
   }
 
-  // Total amount (VAT included)
+  // Total amount (unit price * qty)
   int get amount => unitPrice * (qty <= 0 ? 1 : qty);
 
-  // Split included VAT: supply + vat == amount
-  int get supply => (amount / 1.1).round();
-  int get vat => amount - supply;
+  // Supply value.
+  // - VAT included: split out the 10% VAT (supply + vat == amount).
+  // - VAT excluded: no split, the whole amount is the supply value.
+  int supplyOf(bool vatIncluded) =>
+      vatIncluded ? (amount / 1.1).round() : amount;
+
+  // VAT amount. Zero when VAT is excluded (rendered blank in documents).
+  int vatOf(bool vatIncluded) => vatIncluded ? amount - supplyOf(true) : 0;
 }

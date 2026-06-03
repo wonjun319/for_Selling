@@ -115,7 +115,11 @@ class PdfService {
     widgets.addAll([
       _t(x: 223, y: 721, text: Formatters.money(doc.totalUnitPrice)),
       _t(x: 320, y: 721, text: Formatters.money(doc.totalSupply)),
-      _t(x: 414, y: 721, text: Formatters.money(doc.totalVat)),
+      _t(
+        x: 414,
+        y: 721,
+        text: doc.vatIncluded ? Formatters.money(doc.totalVat) : '',
+      ),
       _t(x: 503, y: 721, text: Formatters.money(doc.totalAmount)),
     ]);
 
@@ -196,7 +200,11 @@ class PdfService {
     widgets.addAll([
       _t(x: 223, y: 721, text: Formatters.money(doc.totalUnitPrice)),
       _t(x: 320, y: 721, text: Formatters.money(doc.totalSupply)),
-      _t(x: 414, y: 721, text: Formatters.money(doc.totalVat)),
+      _t(
+        x: 414,
+        y: 721,
+        text: doc.vatIncluded ? Formatters.money(doc.totalVat) : '',
+      ),
       _t(x: 503, y: 721, text: Formatters.money(doc.totalAmount)),
     ]);
 
@@ -237,6 +245,7 @@ class PdfService {
   static List<pw.Widget> _buildItemsRows(DocProvider doc) {
     final rows = <pw.Widget>[];
     final count = doc.items.length < maxRows ? doc.items.length : maxRows;
+    final vatIncluded = doc.vatIncluded;
 
     for (int i = 0; i < count; i++) {
       final it = doc.items[i];
@@ -256,8 +265,19 @@ class PdfService {
           text: Formatters.money(it.unitPrice),
           size: baseFont + 1,
         ),
-        _t(x: 320, y: y, text: Formatters.money(it.supply), size: baseFont + 1),
-        _t(x: 414, y: y, text: Formatters.money(it.vat), size: baseFont + 1),
+        _t(
+          x: 320,
+          y: y,
+          text: Formatters.money(it.supplyOf(vatIncluded)),
+          size: baseFont + 1,
+        ),
+        // VAT column: left blank when VAT is excluded.
+        _t(
+          x: 414,
+          y: y,
+          text: vatIncluded ? Formatters.money(it.vatOf(true)) : '',
+          size: baseFont + 1,
+        ),
         _t(x: 503, y: y, text: Formatters.money(it.amount), size: baseFont + 1),
       ]);
     }
